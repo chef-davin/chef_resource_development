@@ -19,7 +19,7 @@ transport:
 
 provisioner:
   name: chef_zero
-  product_version: 16
+  product_version: 16.2
   max_retries: 3
   wait_for_retry: 90
   retry_on_exit_code: [35, 213]
