@@ -32,18 +32,7 @@ property :secvalue, String, required: true,
 description: "Policy value to be set for policy name."
 
 load_current_value do |desired|
-  secopt_values = load_secopts_state
-  output = powershell_out(secopt_values)
-  if output.stdout.empty?
-    current_value_does_not_exist!
-  else
-    state = Chef::JSONCompat.from_json(output.stdout)
-  end
-  secvalue state[desired.secoption.to_s]
-end
-
-def load_secopts_state
-  <<-EOH
+  output = powershell_exec(<<-CODE).result
     C:\\Windows\\System32\\secedit /export /cfg $env:TEMP\\secopts_export.inf | Out-Null
     $secopts_data = (Get-Content $env:TEMP\\secopts_export.inf | Select-String -Pattern "^[CEFLMNPR].* =.*$" | Out-String)
     Remove-Item $env:TEMP\\secopts_export.inf -force
@@ -66,7 +55,20 @@ def load_secopts_state
       NewGuestName = $secopts_hash.NewGuestName
       LockoutBadCount = $secopts_hash.LockoutBadCount
     }) | ConvertTo-Json
-  EOH
+  CODE
+
+  current_value_does_not_exist! if output.empty?
+  state = Chef::JSONCompat.from_json(output)
+
+  if desired.secoption == "ResetLockoutCount" || desired.secoption == "LockoutDuration"
+    if state["LockoutBadCount"] == "0"
+      raise Chef::Exceptions::ValidationFailed.new "\"#{desired.secoption}\" cannot be set unless the \"LockoutBadCount\" security policy has been set to a non-zero value"
+    else
+      secvalue state[desired.secoption.to_s]
+    end
+  else
+    secvalue state[desired.secoption.to_s]
+  end
 end
 
 action :set do
