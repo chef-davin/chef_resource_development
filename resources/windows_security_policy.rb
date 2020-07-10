@@ -1,5 +1,6 @@
 # To learn more about Custom Resources, see https://docs.chef.io/custom_resources/
 provides :windows_security_policy_2
+resource_name :windows_security_policy_2
 
 # The valid POLICY_NAMES options found here
 # https://github.com/ChrisAWalker/cSecurityOptions under 'AccountSettings'
@@ -62,7 +63,7 @@ load_current_value do |desired|
 
   if desired.secoption == "ResetLockoutCount" || desired.secoption == "LockoutDuration"
     if state["LockoutBadCount"] == "0"
-      raise Chef::Exceptions::ValidationFailed.new "\"#{desired.secoption}\" cannot be set unless the \"LockoutBadCount\" security policy has been set to a non-zero value"
+      raise Chef::Exceptions::ValidationFailed, "\"#{desired.secoption}\" cannot be set unless the \"LockoutBadCount\" security policy has been set to a non-zero value"
     else
       secvalue state[desired.secoption.to_s]
     end

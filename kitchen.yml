@@ -4,7 +4,7 @@ driver:
 
 driver_config:
   network:
-    - ["forwarded_port", {guest: 3389, host: 3389}]
+    #- ["forwarded_port", {guest: 3389, host: 3389}]
   synced_folders:
     - ['test/integration/lbg_na_windows_10_compliance', 'C:\temp\inspec\lbg_na_windows_10_compliance', 'create: true']
 
