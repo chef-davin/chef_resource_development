@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-privilege_option = %w{SeTrustedCredManAccessPrivilege
+privilege_option = %w(SeTrustedCredManAccessPrivilege
                       SeNetworkLogonRight
                       SeTcbPrivilege
                       SeMachineAccountPrivilege
@@ -60,20 +60,20 @@ privilege_option = %w{SeTrustedCredManAccessPrivilege
                       SeShutdownPrivilege
                       SeSyncAgentPrivilege
                       SeTakeOwnershipPrivilege
-                     }
+                     )
 
 provides :windows_user_policy_2
 resource_name :windows_user_policy_2
 
 property :principal, String,
-  description: "An optional property to add the user to the given privilege. Use only with add and remove action.",
+  description: 'An optional property to add the user to the given privilege. Use only with add and remove action.',
   name_property: true
 
 property :users, Array,
-  description: "An optional property to set the privilege for given users. Use only with set action."
+  description: 'An optional property to set the privilege for given users. Use only with set action.'
 
 property :privilege, [Array, String],
-  description: "Privilege to set for users.",
+  description: 'Privilege to set for users.',
   required: true,
   coerce: proc { |v| v.is_a?(String) ? Array[v] : v },
   callbacks: {
@@ -98,7 +98,7 @@ end
 
 action :set do
   if new_resource.users.nil? || new_resource.users.empty?
-    raise Chef::Exceptions::ValidationFailed, "Users are required property with set action."
+    raise Chef::Exceptions::ValidationFailed, 'Users are required property with set action.'
   end
 
   users = []
@@ -150,7 +150,7 @@ action :remove do
   missing_res_privileges = (new_resource.privilege - curr_res_privilege)
 
   if missing_res_privileges
-    Chef::Log.info("User \'#{new_resource.principal}\' for Privilege: #{missing_res_privileges.join(", ")} not found. Nothing to remove.")
+    Chef::Log.info("User \'#{new_resource.principal}\' for Privilege: #{missing_res_privileges.join(', ')} not found. Nothing to remove.")
   end
 
   (new_resource.privilege - missing_res_privileges).each do |user_right|

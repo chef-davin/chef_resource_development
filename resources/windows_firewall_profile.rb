@@ -4,24 +4,24 @@ unified_mode true
 
 property :profile, String,
   name_property: true,
-  equal_to: %w{ Domain Public Private },
-  description: "Set the Windows Profile being configured"
+  equal_to: %w( Domain Public Private ),
+  description: 'Set the Windows Profile being configured'
 
 property :default_inbound_action, String,
-  equal_to: %w{ Allow Block NotConfigured },
-  description: "Set the default policy for inbound network traffic"
+  equal_to: %w( Allow Block NotConfigured ),
+  description: 'Set the default policy for inbound network traffic'
 
 property :default_outbound_action, String,
-  equal_to: %w{ Allow Block NotConfigured },
-  description: "Set the default policy for outbound network traffic"
+  equal_to: %w( Allow Block NotConfigured ),
+  description: 'Set the default policy for outbound network traffic'
 
-property :allow_inbound_rules, [true, false, String], equal_to: [true, false, "NotConfigured"], description: "Allow users to set inbound firewall rules"
-property :allow_local_firewall_rules, [true, false, String], equal_to: [true, false, "NotConfigured"], description: "Merges inbound firewall rules into the policy"
-property :allow_local_ipsec_rules, [true, false, String], equal_to: [true, false, "NotConfigured"], description: "Allow users to manage local connection security rules"
-property :allow_user_apps, [true, false, String], equal_to: [true, false, "NotConfigured"], description: "Allow user applications to manage firewall"
-property :allow_user_ports, [true, false, String], equal_to: [true, false, "NotConfigured"], description: "Allow users to manage firewall port rules"
-property :allow_unicast_response, [true, false, String], equal_to: [true, false, "NotConfigured"], description: "Allow unicast responses to multicast and broadcast messages"
-property :display_notification, [true, false, String], equal_to: [true, false, "NotConfigured"], description: "Display a notification when firewall blocks certain activity"
+property :allow_inbound_rules, [true, false, String], equal_to: [true, false, 'NotConfigured'], description: 'Allow users to set inbound firewall rules'
+property :allow_local_firewall_rules, [true, false, String], equal_to: [true, false, 'NotConfigured'], description: 'Merges inbound firewall rules into the policy'
+property :allow_local_ipsec_rules, [true, false, String], equal_to: [true, false, 'NotConfigured'], description: 'Allow users to manage local connection security rules'
+property :allow_user_apps, [true, false, String], equal_to: [true, false, 'NotConfigured'], description: 'Allow user applications to manage firewall'
+property :allow_user_ports, [true, false, String], equal_to: [true, false, 'NotConfigured'], description: 'Allow users to manage firewall port rules'
+property :allow_unicast_response, [true, false, String], equal_to: [true, false, 'NotConfigured'], description: 'Allow unicast responses to multicast and broadcast messages'
+property :display_notification, [true, false, String], equal_to: [true, false, 'NotConfigured'], description: 'Display a notification when firewall blocks certain activity'
 
 load_current_value do |desired|
   ps_get_net_fw_profile = load_firewall_state(desired.profile)
@@ -32,33 +32,33 @@ load_current_value do |desired|
     state = Chef::JSONCompat.from_json(output.stdout)
   end
 
-  default_inbound_action state["default_inbound_action"]
-  default_outbound_action state["default_outbound_action"]
-  allow_inbound_rules pwsh_convert(state["allow_inbound_rules"])
-  allow_local_firewall_rules pwsh_convert(state["allow_local_firewall_rules"])
-  allow_local_ipsec_rules pwsh_convert(state["allow_local_ipsec_rules"])
-  allow_user_apps pwsh_convert(state["allow_user_apps"])
-  allow_user_ports pwsh_convert(state["allow_user_ports"])
-  allow_unicast_response pwsh_convert(state["allow_unicast_response"])
-  display_notification pwsh_convert(state["display_notification"])
+  default_inbound_action state['default_inbound_action']
+  default_outbound_action state['default_outbound_action']
+  allow_inbound_rules pwsh_convert(state['allow_inbound_rules'])
+  allow_local_firewall_rules pwsh_convert(state['allow_local_firewall_rules'])
+  allow_local_ipsec_rules pwsh_convert(state['allow_local_ipsec_rules'])
+  allow_user_apps pwsh_convert(state['allow_user_apps'])
+  allow_user_ports pwsh_convert(state['allow_user_ports'])
+  allow_unicast_response pwsh_convert(state['allow_unicast_response'])
+  display_notification pwsh_convert(state['display_notification'])
 end
 def pwsh_convert(obj)
-  if obj.to_s.downcase == "true"
+  if obj.to_s.downcase == 'true'
     true
-  elsif obj.to_s.downcase == "false"
+  elsif obj.to_s.downcase == 'false'
     false
-  elsif obj.to_s.downcase == "notconfigured"
-    "NotConfigured"
+  elsif obj.to_s.downcase == 'notconfigured'
+    'NotConfigured'
   end
 end
 
 def ruby_convert(obj)
-  if obj.to_s.downcase == "true"
-    "True"
-  elsif obj.to_s.downcase == "false"
-    "False"
-  elsif obj.to_s.downcase == "notconfigured"
-    "NotConfigured"
+  if obj.to_s.downcase == 'true'
+    'True'
+  elsif obj.to_s.downcase == 'false'
+    'False'
+  elsif obj.to_s.downcase == 'notconfigured'
+    'NotConfigured'
   end
 end
 
@@ -79,7 +79,6 @@ def load_firewall_state(profile_name)
     }) | ConvertTo-Json
   EOH
 end
-
 
 action :enable do
   converge_if_changed :default_inbound_action, :default_outbound_action, :allow_inbound_rules, :allow_local_firewall_rules,

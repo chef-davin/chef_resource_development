@@ -7,10 +7,10 @@
 #   privilege ""
 #   action :clear
 # end
-include_recipe "audit::default"
+include_recipe 'audit::default'
 
 if windows?
-  include_recipe "resource_development::windows"
+  include_recipe 'resource_development::windows'
 else
-  include_recipe "resource_development::linux"
+  include_recipe 'resource_development::linux'
 end

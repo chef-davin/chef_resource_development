@@ -4,7 +4,7 @@ resource_name :windows_security_policy_2
 
 # The valid POLICY_NAMES options found here
 # https://github.com/ChrisAWalker/cSecurityOptions under 'AccountSettings'
-POLICY_NAMES = %w{MaximumPasswordAge
+POLICY_NAMES = %w(MaximumPasswordAge
                   MinimumPasswordAge
                   MinimumPasswordLength
                   PasswordComplexity
@@ -20,17 +20,17 @@ POLICY_NAMES = %w{MaximumPasswordAge
                   LSAAnonymousNameLookup
                   EnableAdminAccount
                   EnableGuestAccount
-                 }.freeze
-description "Use the **windows_security_policy** resource to set a security policy on the Microsoft Windows platform."
-introduced "16.0"
+                 ).freeze
+description 'Use the **windows_security_policy** resource to set a security policy on the Microsoft Windows platform.'
+introduced '16.0'
 
 property :secoption, String,
   name_property: true,
   equal_to: POLICY_NAMES,
-  description: "The name of the policy to be set on windows platform to maintain its security."
+  description: 'The name of the policy to be set on windows platform to maintain its security.'
 
 property :secvalue, String, required: true,
-description: "Policy value to be set for policy name."
+description: 'Policy value to be set for policy name.'
 
 load_current_value do |desired|
   output = powershell_exec(<<-CODE).result
@@ -61,8 +61,8 @@ load_current_value do |desired|
   current_value_does_not_exist! if output.empty?
   state = Chef::JSONCompat.from_json(output)
 
-  if desired.secoption == "ResetLockoutCount" || desired.secoption == "LockoutDuration"
-    if state["LockoutBadCount"] == "0"
+  if desired.secoption == 'ResetLockoutCount' || desired.secoption == 'LockoutDuration'
+    if state['LockoutBadCount'] == '0'
       raise Chef::Exceptions::ValidationFailed, "\"#{desired.secoption}\" cannot be set unless the \"LockoutBadCount\" security policy has been set to a non-zero value"
     else
       secvalue state[desired.secoption.to_s]

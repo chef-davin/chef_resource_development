@@ -1,7 +1,7 @@
-windows_task "chef-client" do
-  cwd "C:\\opscode\\chef\\bin"
-  command "chef-client -L C:\\chef\\log\\client.log"
-  description "Runs the chef-client binary. Configured by the windows_task resource rather than the chef_client_scheduled_task"
+windows_task 'chef-client' do
+  cwd 'C:\\opscode\\chef\\bin'
+  command 'chef-client -L C:\\chef\\log\\client.log'
+  description 'Runs the chef-client binary. Configured by the windows_task resource rather than the chef_client_scheduled_task'
   frequency :hourly
   random_delay 600
   action :create
@@ -17,20 +17,20 @@ end
 #   action :create
 # end
 
-windows_security_policy_2 "EnableGuestAccount" do
-  secvalue "0"
+windows_security_policy_2 'EnableGuestAccount' do
+  secvalue '0'
   action :set
 end
 
-windows_security_policy_2 "NewGuestName" do
-  secvalue "NeverBeAGuest"
+windows_security_policy_2 'NewGuestName' do
+  secvalue 'NeverBeAGuest'
   action :set
 end
 
-windows_firewall_profile "Configure and Enable Windows Firewall Domain Profile" do
-  profile "Domain"
-  default_inbound_action "Block"
-  default_outbound_action "Allow"
+windows_firewall_profile 'Configure and Enable Windows Firewall Domain Profile' do
+  profile 'Domain'
+  default_inbound_action 'Block'
+  default_outbound_action 'Allow'
   allow_inbound_rules true
   allow_local_firewall_rules true
   allow_local_ipsec_rules true
@@ -39,9 +39,9 @@ windows_firewall_profile "Configure and Enable Windows Firewall Domain Profile" 
   action :enable
 end
 
-windows_firewall_profile "Public" do
-  default_inbound_action "Block"
-  default_outbound_action "Allow"
+windows_firewall_profile 'Public' do
+  default_inbound_action 'Block'
+  default_outbound_action 'Allow'
   allow_inbound_rules true
   allow_local_firewall_rules false
   allow_local_ipsec_rules false
@@ -50,9 +50,9 @@ windows_firewall_profile "Public" do
   action :enable
 end
 
-windows_firewall_profile "Private" do
-  default_inbound_action "Block"
-  default_outbound_action "Allow"
+windows_firewall_profile 'Private' do
+  default_inbound_action 'Block'
+  default_outbound_action 'Allow'
   allow_inbound_rules true
   allow_local_firewall_rules true
   allow_local_ipsec_rules true

@@ -2,11 +2,11 @@
 driver:
   name: vagrant
 
-driver_config:
-  network:
+# driver_config:
+  # network:
     #- ["forwarded_port", {guest: 3389, host: 3389}]
-  synced_folders:
-    - ['test/integration/lbg_na_windows_10_compliance', 'C:\temp\inspec\lbg_na_windows_10_compliance', 'create: true']
+  # synced_folders:
+  #   - ['test/integration/lbg_na_windows_10_compliance', 'C:\temp\inspec\lbg_na_windows_10_compliance', 'create: true']
 
 ## The forwarded_port port feature lets you connect to ports on the VM guest via
 ## localhost on the host.
@@ -19,21 +19,72 @@ transport:
 
 provisioner:
   name: chef_zero
-  product_version: 16.2
+  product_version: 16.3
   max_retries: 3
   wait_for_retry: 90
   retry_on_exit_code: [35, 213]
   client_rb:
-    data_collector.server_url: 'https://dt-automate.centralus.cloudapp.azure.com/data-collector/v0/'
-    data_collector.token: 'Sn_P3TZ2Njw4XS8vsKKI0OGZT3U='
     chef_license: accept
     exit_status: :enabled
     client_fork: false
 
 verifier:
   name: inspec
-
+<% rightnow = Time.now.to_i %>
 platforms:
+  - name: ubuntu-20.04
+    transport:
+      name: ssh
+    driver:
+      customize:
+        createhd:
+          - filename: /tmp/disk-<%= rightnow.to_s %>a.vmdk
+            size: 10240
+          - filename: /tmp/disk-<%= rightnow.to_s %>b.vmdk
+            size: 5120
+        storagectl:
+          - name: SATA Controller
+            portcount: 4
+        storageattach:
+          - storagectl: SATA Controller
+            port: 1
+            device: 0
+            type: hdd
+            medium: /tmp/disk-<%= rightnow.to_s %>a.vmdk
+          - storagectl: SATA Controller
+            port: 2
+            device: 0
+            type: hdd
+            medium: /tmp/disk-<%= rightnow.to_s %>b.vmdk
+  - name: ubuntu-18.10
+    transport:
+      name: ssh
+    driver:
+      customize:
+        createhd:
+          - filename: /tmp/disk-<%= rightnow.to_s %>.vmdk
+            size: 10240
+        storagectl:
+          - name: SATA Controller
+            portcount: 4
+        storageattach:
+          - storagectl: SATA Controller
+            port: 1
+            device: 0
+            type: hdd
+            medium: /tmp/disk-<%= rightnow.to_s %>.vmdk
+  - name: ubuntu-16.10
+    transport:
+      name: ssh
+  - name: centos-8.2
+    transport:
+      name: ssh
+  - name: centos-7.8
+    transport:
+      name: ssh
+  - name: centos-6.10
+    transport:
+      name: ssh
   - name: windows10
     driver:
       # box: tas50/windows_10
@@ -47,6 +98,15 @@ platforms:
       box: tas50/windows_2019
 
 suites:
+  - name: linux
+    verifier:
+      inspec_tests:
+        - test/integration/default
+    attributes:
+    excludes:
+      - windows10
+      - windows2016
+      - windows2019
   - name: windesktop
     verifier:
       inspec_tests:
