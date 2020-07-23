@@ -30,6 +30,7 @@ provisioner:
 
 verifier:
   name: inspec
+
 <% rightnow = Time.now.to_i %>
 platforms:
   - name: ubuntu-20.04
