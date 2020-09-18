@@ -24,7 +24,7 @@ property :expiration, String,
         false
       end
     },
-    }
+  }
 
 property :run_test, [true, false],
   description: 'If present and true, the control will run and be reported, but failures in it won’t make the overall run fail. If absent or false, the control will not be run.'

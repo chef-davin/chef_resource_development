@@ -17,6 +17,8 @@ bin/*
 kitchen.local.yml
 kitchen.azure.yml
 kitchen.openstack.yml
+kitchen.yml
+kitchen*
 
 # Chef
 Berksfile.lock
