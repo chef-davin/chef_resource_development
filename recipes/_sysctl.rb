@@ -36,3 +36,4 @@ node['cis_rhel_hardening']['sysctl'].each do |_key, values|
     end
   end
 end
+

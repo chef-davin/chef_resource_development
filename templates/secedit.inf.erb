@@ -1,0 +1,14 @@
+[Unicode]
+Unicode=yes
+[System Access]
+<% if security_option == 'NewAdministratorName' || security_option == 'NewGuestName' %>
+<%= security_option -%>% = "<%= security_value %>"
+<% else %>
+<%= security_option -%>% = "<%= security_value.to_i %>"
+<% end %>
+[Event Audit]
+[Registry Values]
+[Privilege Rights]
+[Version]
+signature="$CHICAGO$"
+Revision=1
