@@ -9,7 +9,7 @@
 # camel-casing throughout the remainder of the name.
 #
 module ResourceDevelopment
-  module ResourceHelpersHelpers
+  module ResourceHelpers
     #
     # Define the methods that you would like to assist the work you do in recipes,
     # resources, or templates.
@@ -17,12 +17,14 @@ module ResourceDevelopment
     # def my_helper_method
     #   # help method implementation
     # end
-    def file_exists?(filename)
-      if ::File.file?(filename) && ::File.readable?(filename) && !::File.zero?(filename)
-        true
-      else
-        false
+    def system_root?
+      values = registry_get_values('HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion')
+      sysroot = ''
+      values.each do |reg_key|
+        next unless reg_key[:name] == 'SystemRoot'
+        sysroot = reg_key[:value]
       end
+      sysroot
     end
   end
 end
@@ -44,3 +46,6 @@ end
 #       variables specific_key: my_helper_method
 #     end
 #
+Chef::Resource.include ::ResourceDevelopment::ResourceHelpers
+Chef::DSL::Recipe.include ::ResourceDevelopment::ResourceHelpers
+Chef::Node.include ::ResourceDevelopment::ResourceHelpers
