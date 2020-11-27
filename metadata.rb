@@ -3,7 +3,7 @@ maintainer 'Davin Taddeo'
 maintainer_email 'davin@chef.io'
 license 'Apache-2.0'
 description 'Cookbook for developing resources I would like to add into chef-client'
-version '0.1.7'
+version '0.2.0'
 chef_version '>= 16.0'
 
 # The `issues_url` points to the location where issues for this cookbook are
