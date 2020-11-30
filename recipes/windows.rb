@@ -66,3 +66,18 @@
 #   file 'C:\\inspec_waiver_file.yml'
 #   action :remove
 # end
+
+windows_security_policy 'NewGuestName' do
+  secvalue 'somethingwicked'
+  action :set
+end
+
+windows_security_policy 'EnableGuestAccount' do
+  secvalue '1'
+  action :set
+end
+
+windows_security_policy 'MaximumPasswordAge' do
+  secvalue '220'
+  action :set
+end
