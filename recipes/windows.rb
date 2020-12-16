@@ -68,7 +68,7 @@
 # end
 
 windows_security_policy 'NewGuestName' do
-  secvalue 'somethingwicked'
+  secvalue 'dusttodust'
   action :set
 end
 
@@ -78,6 +78,16 @@ windows_security_policy 'EnableGuestAccount' do
 end
 
 windows_security_policy 'MaximumPasswordAge' do
-  secvalue '220'
+  secvalue '252'
+  action :set
+end
+
+windows_security_policy 'LockoutBadCount' do
+  secvalue '5'
+  action :set
+end
+
+windows_security_policy 'LockoutDuration' do
+  secvalue '30'
   action :set
 end

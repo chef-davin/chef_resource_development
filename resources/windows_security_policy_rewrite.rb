@@ -1,3 +1,4 @@
+require 'tempfile'
 unified_mode true
 
 provides :windows_security_policy
@@ -31,6 +32,56 @@ property :secvalue, String, required: true,
 description: 'Policy value to be set for policy name.'
 
 load_current_value do |desired|
+  current_state = load_security_options
+
+  if desired.secoption == 'ResetLockoutCount'
+    if desired.secvalue.to_i > 30
+      raise Chef::Exceptions::ValidationFailed, "The \"ResetLockoutCount\" value cannot be greater than 30 minutes"
+    end
+  end
+  if desired.secoption == 'ResetLockoutCount' || desired.secoption == 'LockoutDuration'
+    if current_state['LockoutBadCount'] == '0'
+      raise Chef::Exceptions::ValidationFailed, "#{desired.secoption} cannot be set unless the \"LockoutBadCount\" security policy has been set to a non-zero value"
+    else
+      secvalue current_state[desired.secoption.to_s]
+    end
+  else
+    secvalue current_state[desired.secoption.to_s]
+  end
+end
+
+action :set do
+  converge_if_changed :secvalue do
+    security_option = new_resource.secoption
+    security_value = new_resource.secvalue
+
+    file = Tempfile.new(["#{security_option}", '.inf'])
+    case security_option
+    when 'LockoutBadCount'
+      cmd = "net accounts /LockoutThreshold:#{security_value}"
+    when 'ResetLockoutCount'
+      cmd = "net accounts /LockoutWindow:#{security_value}"
+    when 'LockoutDuration'
+      cmd = "net accounts /LockoutDuration:#{security_value}"
+    when 'NewAdministratorName', 'NewGuestName'
+      policy_line = "#{security_option} = \"#{security_value}\""
+      file.write("[Unicode]\r\nUnicode=yes\r\n[System Access]\r\n#{policy_line}\r\n[Version]\r\nsignature=\"$CHICAGO$\"\r\nRevision=1\r\n")
+      file.close
+      file_path = file.path.gsub('/', '\\')
+      cmd = "C:\\Windows\\System32\\secedit /configure /db C:\\windows\\security\\new.sdb /cfg #{file_path} /areas SECURITYPOLICY"
+    else
+      policy_line = "#{security_option} = #{security_value}"
+      file.write("[Unicode]\r\nUnicode=yes\r\n[System Access]\r\n#{policy_line}\r\n[Version]\r\nsignature=\"$CHICAGO$\"\r\nRevision=1\r\n")
+      file.close
+      file_path = file.path.gsub('/', '\\')
+      cmd = "C:\\Windows\\System32\\secedit /configure /db C:\\windows\\security\\new.sdb /cfg #{file_path} /areas SECURITYPOLICY"
+    end
+    shell_out!(cmd)
+    file.unlink
+  end
+end
+
+def load_security_options
   powershell_code = <<-CODE
     C:\\Windows\\System32\\secedit /export /cfg $env:TEMP\\secopts_export.inf | Out-Null
     # cspell:disable-next-line
@@ -54,48 +105,7 @@ load_current_value do |desired|
       MinimumPasswordAge = $security_options_hash.MinimumPasswordAge
       NewGuestName = $security_options_hash.NewGuestName
       LockoutBadCount = $security_options_hash.LockoutBadCount
-    }) | ConvertTo-Json
+    })
   CODE
-  output = powershell_out(powershell_code)
-  current_value_does_not_exist! if output.stdout.empty?
-  state = Chef::JSONCompat.from_json(output.stdout)
-
-  if desired.secoption == 'ResetLockoutCount' || desired.secoption == 'LockoutDuration'
-    if state['LockoutBadCount'] == '0'
-      raise Chef::Exceptions::ValidationFailed, "#{desired.secoption} cannot be set unless the \"LockoutBadCount\" security policy has been set to a non-zero value"
-    else
-      secvalue state[desired.secoption.to_s]
-    end
-  else
-    secvalue state[desired.secoption.to_s]
-  end
-end
-
-action :set do
-  converge_if_changed :secvalue do
-    security_option = new_resource.secoption
-    security_value = new_resource.secvalue
-
-    policy_line = if security_option == 'NewAdministratorName' || security_option == 'NewGuestName'
-                    "#{security_option} = \"#{security_value}\""
-                  else
-                    "#{security_option} = #{security_value}"
-                  end
-    file "#{Chef::Config[:file_cache_path]}\\#{security_option}_temp.inf" do
-      content "[Unicode]\r\nUnicode=yes\r\n[System Access]\r\n#{policy_line}\r\n[Version]\r\nsignature=\"$CHICAGO$\"\r\nRevision=1\r\n"
-      backup false
-      action :create
-    end
-    execute "Configure Security Policy for Security Option: #{security_option}" do
-      cwd Chef::Config[:file_cache_path]
-      command <<~CMD
-        C:\\Windows\\System32\\secedit /configure /db C:\\windows\\security\\new.sdb /cfg #{security_option}_temp.inf /areas SECURITYPOLICY
-      CMD
-      action :run
-    end
-    file "#{Chef::Config[:file_cache_path]}\\#{security_option}_temp.inf" do
-      backup false
-      action :delete
-    end
-  end
+  powershell_exec(powershell_code).result
 end
