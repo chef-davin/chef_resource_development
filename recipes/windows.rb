@@ -38,56 +38,61 @@
 #   action :enable
 # end
 
-# inspec_waiver_file 'cis-access-cred-manager-2.2.1' do
-#   file 'C:\\chef\\inspec_waiver_file.yml'
-#   justification 'Because I want to waive this BS'
-#   action :add
+# file 'C:\\chef\\inspec_waiver_file.yml' do
+#   content '---'
+#   action :create
 # end
 
-# inspec_waiver_file 'cis-act-as-os-2.2.3' do
-#   file 'C:\\chef\\inspec_waiver_file.yml'
-#   expiration '2022-02-28'
-#   justification 'This control should be waived for a couple years at least'
-#   action :add
+inspec_waiver_file 'cis-access-cred-manager-2.2.1' do
+  file 'C:\\chef\\inspec_waiver_file.yml'
+  justification 'Because I want to waive this BS'
+  action :add
+end
+
+inspec_waiver_file 'cis-act-as-os-2.2.3' do
+  file 'C:\\chef\\inspec_waiver_file.yml'
+  expiration '2022-02-28'
+  justification 'This control should be waived for a couple years at least'
+  action :add
+end
+
+inspec_waiver_file 'powershell-script-blocklogging' do
+  file 'C:\\chef\\inspec_waiver_file.yml'
+  justification 'This control should be waived for a while'
+  action :add
+end
+
+inspec_waiver_file 'disable-windows-store' do
+  file 'C:\\chef\\inspec_waiver_file.yml'
+  action :remove
+end
+
+inspec_waiver_file 'microsoft-online-accounts' do
+  file 'C:\\chef\\inspec_waiver_file.yml'
+  action :remove
+end
+
+# windows_security_policy 'NewGuestName' do
+#   secvalue 'dusttodust'
+#   action :set
 # end
 
-# inspec_waiver_file 'powershell-script-blocklogging' do
-#   file 'C:\\chef\\inspec_waiver_file.yml'
-#   justification 'This control should be waived for a while'
-#   action :add
+# windows_security_policy 'EnableGuestAccount' do
+#   secvalue '1'
+#   action :set
 # end
 
-# inspec_waiver_file 'disable-windows-store' do
-#   file 'C:\\chef\\inspec_waiver_file.yml'
-#   action :remove
+# windows_security_policy 'MaximumPasswordAge' do
+#   secvalue '252'
+#   action :set
 # end
 
-# inspec_waiver_file 'microsoft-online-accounts' do
-#   file 'C:\\inspec_waiver_file.yml'
-#   action :remove
+# windows_security_policy 'LockoutBadCount' do
+#   secvalue '5'
+#   action :set
 # end
 
-windows_security_policy 'NewGuestName' do
-  secvalue 'dusttodust'
-  action :set
-end
-
-windows_security_policy 'EnableGuestAccount' do
-  secvalue '1'
-  action :set
-end
-
-windows_security_policy 'MaximumPasswordAge' do
-  secvalue '252'
-  action :set
-end
-
-windows_security_policy 'LockoutBadCount' do
-  secvalue '5'
-  action :set
-end
-
-windows_security_policy 'LockoutDuration' do
-  secvalue '30'
-  action :set
-end
+# windows_security_policy 'LockoutDuration' do
+#   secvalue '30'
+#   action :set
+# end

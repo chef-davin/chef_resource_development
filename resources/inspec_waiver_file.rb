@@ -46,7 +46,8 @@ action :add do
 
     file "Update Waiver File #{new_resource.file} to update waiver for control #{new_resource.control}" do
       path new_resource.file
-      content waiver_hash.to_yaml
+      # content waiver_hash.to_yaml
+      content YAML.dump(waiver_hash)
       backup new_resource.backup
       action :create
     end
@@ -61,7 +62,8 @@ action :remove do
     waiver_hash = waiver_hash.sort.to_h
     file "Update Waiver File #{new_resource.file} to remove waiver for control #{new_resource.control}" do
       path new_resource.file
-      content waiver_hash.to_yaml
+      # content waiver_hash.to_yaml
+      content YAML.dump(waiver_hash)
       backup new_resource.backup
       action :create
     end
@@ -70,10 +72,19 @@ end
 
 action_class do
   def load_waiver_file_to_hash(file_name)
-    if ::File.exist?(file_name)
-      ::YAML.load_file(file_name)
+    if file_name =~ %r{(/|C:\\).*(.yaml|.yml)}i
+      if ::File.exist?(file_name)
+        hash = ::YAML.load_file(file_name)
+        if hash == false || hash.nil? || hash == ''
+          {}
+        else
+          ::YAML.load_file(file_name)
+        end
+      else
+        {}
+      end
     else
-      {}
+      raise "Waivers file needs to be a YAML file which should have a .yaml or .yml extension -\"#{file_name}\" does not have an appropriate extension"
     end
   end
 end
