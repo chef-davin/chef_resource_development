@@ -31,7 +31,6 @@ provisioner:
 verifier:
   name: inspec
 
-<% rightnow = Time.now.to_i %>
 platforms:
   - name: ubuntu-20.04
     transport:
@@ -39,9 +38,9 @@ platforms:
     driver:
       customize:
         createhd:
-          - filename: /tmp/disk-<%= rightnow.to_s %>a.vmdk
+          - filename: /tmp/disk-<%= Time.now.to_i.to_s %>a.vmdk
             size: 10240
-          - filename: /tmp/disk-<%= rightnow.to_s %>b.vmdk
+          - filename: /tmp/disk-<%= Time.now.to_i.to_s %>b.vmdk
             size: 5120
         storagectl:
           - name: SATA Controller
@@ -51,19 +50,19 @@ platforms:
             port: 1
             device: 0
             type: hdd
-            medium: /tmp/disk-<%= rightnow.to_s %>a.vmdk
+            medium: /tmp/disk-<%= Time.now.to_i.to_s %>a.vmdk
           - storagectl: SATA Controller
             port: 2
             device: 0
             type: hdd
-            medium: /tmp/disk-<%= rightnow.to_s %>b.vmdk
-  - name: ubuntu-18.10
+            medium: /tmp/disk-<%= Time.now.to_i.to_s %>b.vmdk
+  - name: ubuntu-18.04
     transport:
       name: ssh
     driver:
       customize:
         createhd:
-          - filename: /tmp/disk-<%= rightnow.to_s %>.vmdk
+          - filename: /tmp/disk-<%= Time.now.to_i.to_s %>.vmdk
             size: 10240
         storagectl:
           - name: SATA Controller
@@ -73,8 +72,8 @@ platforms:
             port: 1
             device: 0
             type: hdd
-            medium: /tmp/disk-<%= rightnow.to_s %>.vmdk
-  - name: ubuntu-16.10
+            medium: /tmp/disk-<%= Time.now.to_i.to_s %>.vmdk
+  - name: ubuntu-16.04
     transport:
       name: ssh
   - name: centos-8.2
@@ -83,20 +82,31 @@ platforms:
   - name: centos-7.8
     transport:
       name: ssh
-  - name: centos-6.10
-    transport:
-      name: ssh
+  # - name: centos-6.10
+  #   transport:
+  #     name: ssh
   - name: windows10
     driver:
       # box: tas50/windows_10
       box: gusztavvargadr/windows-10
       gui: false
+      customize:
+        cpus: 2
+        memory: 4096
   - name: windows2016
     driver:
       box: tas50/windows_2016
+      gui: false
+      customize:
+        cpus: 2
+        memory: 4096
   - name: windows2019
     driver:
       box: tas50/windows_2019
+      gui: false
+      customize:
+        cpus: 2
+        memory: 4096
 
 suites:
   - name: linux
