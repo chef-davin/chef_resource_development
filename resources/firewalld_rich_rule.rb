@@ -12,7 +12,6 @@ property :family, String,
   description: 'IP family. Choice of "ipv4" or "ipv6"'
 
 property :zone, String,
-  default: 'drop',
   description: 'The zone to remove or add a rule from'
 
 property :source_address, String,
@@ -96,22 +95,6 @@ action :remove do
   end
 end
 
-def zone_ref(my_zone)
-  if zone.nil?
-    ''
-  else
-    "--zone=#{my_zone}"
-  end
-end
-
-def zone_desc(my_zone)
-  if my_zone.nil?
-    ''
-  else
-    " from zone: \"#{my_zone}\""
-  end
-end
-
 action_class do
   def rule_cmd
     cmd = 'rule '
@@ -127,5 +110,21 @@ action_class do
     cmd += "limit value='#{new_resource.limit_value}' " if new_resource.limit_value
     cmd += new_resource.firewall_action if new_resource.firewall_action
     cmd
+  end
+end
+
+def zone_ref(my_zone)
+  if zone.nil?
+    ''
+  else
+    "--zone=#{my_zone}"
+  end
+end
+
+def zone_desc(my_zone)
+  if my_zone.nil?
+    ''
+  else
+    " from zone: \"#{my_zone}\""
   end
 end
