@@ -1,6 +1,5 @@
 # To learn more about Custom Resources, see https://docs.chef.io/custom_resources/
 provides :firewalld_service
-resource_name :firewalld_service
 unified_mode true
 
 property :service, [String, Array],

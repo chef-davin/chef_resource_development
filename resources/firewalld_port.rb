@@ -1,6 +1,5 @@
 # To learn more about Custom Resources, see https://docs.chef.io/custom_resources/
 provides :firewalld_port
-resource_name :firewalld_port
 unified_mode true
 
 property :port, [String, Array],
